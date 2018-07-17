@@ -3,7 +3,12 @@ pipeline {
   stages {
     stage('Build source') {
       steps {
-        sh '/usr/bin/build-source.sh'
+        sh '''export IGNORE_GIT_BUILDPACKAGE=true
+export USE_ORIG_VERSION=true
+export SKIP_DCH=true
+export SKIP_PRE_CLEANUP=true
+export SKIP_GIT_CLEANUP=true
+/usr/bin/build-source.sh'''
         stash(name: 'source', includes: '*.gz,*.bz2,*.xz,*.deb,*.dsc,*.changes,*.buildinfo,lintian.txt')
         cleanWs(cleanWhenAborted: true, cleanWhenFailure: true, cleanWhenNotBuilt: true, cleanWhenSuccess: true, cleanWhenUnstable: true, deleteDirs: true)
       }
