@@ -4,4 +4,6 @@
 
 
 override_dh_auto_build:
+	cargo update
+	cargo build --release
 	cargo install --root ./debian/afirmflasher/usr
