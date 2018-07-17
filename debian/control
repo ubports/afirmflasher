@@ -1,7 +1,7 @@
 Source: afirmflasher
 Section: rust
 Priority: optional
-Build-Depends: debhelper (>= 11),
+Build-Depends: debhelper (>= 9),
  dh-cargo (>= 6),
  cargo:native <!nocheck>,
  rustc:native <!nocheck>,
