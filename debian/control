@@ -3,6 +3,7 @@ Section: rust
 Priority: optional
 Build-Depends: debhelper (>= 9),
  dh-cargo (>= 6),
+ pkg-config,
  cargo:native <!nocheck>,
  rustc:native <!nocheck>,
  libstd-rust-dev <!nocheck>,
