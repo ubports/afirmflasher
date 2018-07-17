@@ -11,6 +11,7 @@ use serde_json::Value;
 use std::path::Path;
 use std::fs;
 use std::env;
+use std::File;
 
 fn get_cache_path() -> &'static Path {
     let path = Path::new("/cache/afirmflasher");
@@ -51,6 +52,10 @@ fn download_file(url: &str, name: &str) -> Result<(), reqwest::Error> {
 fn write_to_partition(file: &str, partition: &str) -> Result<(), std::io::Error> {
     let f = fs::read(get_cache_path().join(file))?;
     fs::write(partition, f)?;
+
+    let mut bytes = Vec::new();
+    File::open(get_cache_path().join(file))?.read_to_end(&mut bytes)?;
+
 
     println!("Write {:?} into {:?}", file, partition);
 
