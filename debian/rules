@@ -1,3 +1,7 @@
 #!/usr/bin/make -f
 %:
-	dh $@ --buildsystem cargo
+	dh $@
+
+
+override_dh_auto_build:
+	cargo install --root ./debian/afirmflasher/usr
