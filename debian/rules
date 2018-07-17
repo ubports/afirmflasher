@@ -1,9 +1,15 @@
 #!/usr/bin/make -f
+
+
+CARGO_HOME="${CURDIR}/.cargodir"
+export CARGO_HOME="${CURDIR}/.cargodir"
+
 %:
 	dh $@
 
 
 override_dh_auto_build:
+	mkdir -p $$CARGO_HOME
 	cargo update
 	cargo build --release
 	cargo install --root ./debian/afirmflasher/usr
