@@ -1,0 +1,5 @@
+rust-log (0.0.1-0ubports) xenial; urgency=medium
+
+  * Initial packaging
+
+ -- marius <marius@ubports.com>  Tue, 17 Jul 2018 11:55:22 +0200

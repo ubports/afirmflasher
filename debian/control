@@ -1,0 +1,22 @@
+Source: afirmflasher
+Section: rust
+Priority: optional
+Build-Depends: debhelper (>= 11),
+ dh-cargo (>= 6),
+ cargo:native <!nocheck>,
+ rustc:native <!nocheck>,
+ libstd-rust-dev <!nocheck>,
+ librust-cfg-if-0.1+default-dev (>= 0.1.2~~) <!nocheck>,
+ libandroid-properties-dev
+Maintainer: Debian Rust Maintainers <pkg-rust-maintainers@alioth-lists.debian.net>
+Uploaders: Marius Gripsgard <marius@ubports.com>
+Standards-Version: 4.1.5
+
+Package: afirmflasher
+Architecture: any
+Multi-Arch: same
+Depends:
+ ${misc:Depends},
+Description: Lightweight android firmware flasher
+ This package contains afirmflasher, a firmflasher is a lightweight android firmware
+ flasher.
