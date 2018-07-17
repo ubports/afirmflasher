@@ -11,7 +11,8 @@ use serde_json::Value;
 use std::path::Path;
 use std::fs;
 use std::env;
-use std::File;
+use std::fs::File;
+use std::io::prelude::*;
 
 fn get_cache_path() -> &'static Path {
     let path = Path::new("/cache/afirmflasher");
@@ -42,7 +43,7 @@ fn download_file(url: &str, name: &str) -> Result<(), reqwest::Error> {
     let mut buf: Vec<u8> = vec![];
     resp.copy_to(&mut buf)?;
 
-    fs::write(get_cache_path().join(name), buf).unwrap();
+    File::open(get_cache_path().join(name)).unwrap().write(&buf).unwrap();
 
     println!("Downloaded {:?} into {:?}", url, get_cache_path().join(name));
 
@@ -50,12 +51,9 @@ fn download_file(url: &str, name: &str) -> Result<(), reqwest::Error> {
 }
 
 fn write_to_partition(file: &str, partition: &str) -> Result<(), std::io::Error> {
-    let f = fs::read(get_cache_path().join(file))?;
-    fs::write(partition, f)?;
-
     let mut bytes = Vec::new();
     File::open(get_cache_path().join(file))?.read_to_end(&mut bytes)?;
-
+    File::open(partition)?.write(&bytes);
 
     println!("Write {:?} into {:?}", file, partition);
 
@@ -102,8 +100,9 @@ fn checksum(file: &str) -> String {
     use sha2::Digest;
     let mut hasher = sha2::Sha256::default();
 
-    let f = fs::read(file).unwrap();
-    hasher.input(f.as_ref());
+    let mut bytes = Vec::new();
+    File::open(get_cache_path().join(file)).unwrap().read_to_end(&mut bytes).unwrap();
+    hasher.input(bytes.as_ref());
 
     format!("{:x}", hasher.result())
 }
