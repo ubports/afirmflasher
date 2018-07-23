@@ -13,4 +13,4 @@ override_dh_auto_build:
 	mkdir -p $$CARGO_HOME
 	cargo update
 	cargo build --release
-	cargo install --root ${CURDIR}/debian/afirmflasher/usr
+	cargo install --root ${CURDIR}/debian/tmp2/usr
