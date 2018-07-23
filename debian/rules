@@ -3,6 +3,7 @@
 
 CARGO_HOME="${CURDIR}/.cargodir"
 export CARGO_HOME="${CURDIR}/.cargodir"
+export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 
 %:
 	dh $@
