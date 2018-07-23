@@ -53,7 +53,7 @@ fn download_file(url: &str, name: &str) -> Result<(), reqwest::Error> {
 fn write_to_partition(file: &str, partition: &str) -> Result<(), std::io::Error> {
     let mut bytes = Vec::new();
     File::open(get_cache_path().join(file))?.read_to_end(&mut bytes)?;
-    File::open(partition)?.write(&bytes);
+    File::create(partition)?.write_all(&bytes).unwrap();
 
     println!("Write {:?} into {:?}", file, partition);
 
