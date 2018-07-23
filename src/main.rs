@@ -43,7 +43,7 @@ fn download_file(url: &str, name: &str) -> Result<(), reqwest::Error> {
     let mut buf: Vec<u8> = vec![];
     resp.copy_to(&mut buf)?;
 
-    File::open(get_cache_path().join(name)).unwrap().write(&buf).unwrap();
+    File::create(get_cache_path().join(name)).unwrap().write(&buf).unwrap();
 
     println!("Downloaded {:?} into {:?}", url, get_cache_path().join(name));
 
