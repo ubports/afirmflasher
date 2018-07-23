@@ -13,4 +13,6 @@ override_dh_auto_build:
 	mkdir -p $$CARGO_HOME
 	cargo update
 	cargo build --release
+	
+override_dh_auto_install:
 	cargo install --root ${CURDIR}/debian/tmp2/usr
