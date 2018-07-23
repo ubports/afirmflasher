@@ -140,13 +140,14 @@ fn check_paritions_checksums(par: &Vec<Value>, url: &str, no_flash: bool) {
 }
 
 fn flash_partition_if_newer(no_flash: bool) {
-    let devices_v = get_devices().unwrap();
-    if !devices_v.is_object() {
+    let devices_r = get_devices().unwrap();
+    let devices_v = devices_r.as_object().unwrap();
+    if !devices_v["devices"].is_object() {
         println!("Devices json is not an object!");
         return;
     }
 
-    let devices = devices_v.as_object().unwrap();
+    let devices = devices_v["devices"].as_object().unwrap();
     let device = get_device();
 
     if !devices.contains_key(&device) {
