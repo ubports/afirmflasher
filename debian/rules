@@ -3,6 +3,7 @@
 
 CARGO_HOME="${CURDIR}/.cargodir"
 export CARGO_HOME="${CURDIR}/.cargodir"
+export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 
 %:
 	dh $@
@@ -12,4 +13,9 @@ override_dh_auto_build:
 	mkdir -p $$CARGO_HOME
 	cargo update
 	cargo build --release
-	cargo install --root ./debian/afirmflasher/usr
+	
+override_dh_auto_install:
+	cargo install --root ${CURDIR}/debian/tmp2/usr
+
+override_dh_install:
+	dh_install --sourcedir=${CURDIR}/debian/tmp2 -pafirmflasher
