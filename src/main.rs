@@ -171,7 +171,7 @@ fn flash_partition_if_newer(no_flash: bool) {
 fn main() {
     let args: Vec<String> = env::args().collect();
     println!("Device is: {:?}", get_device());
-    if &args[1] == "-d" {
+    if args.len() > 1 && &args[1] == "-d" {
         println!("Checking paritions");
         flash_partition_if_newer(true);
         return;
