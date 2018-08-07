@@ -9,7 +9,8 @@ Build-Depends: debhelper (>= 9),
  libstd-rust-dev <!nocheck>,
  libandroid-properties-dev,
  libssl-dev,
- ca-certificates
+ ca-certificates,
+ libdbus-1-dev
 Maintainer: Debian Rust Maintainers <pkg-rust-maintainers@alioth-lists.debian.net>
 Uploaders: Marius Gripsgard <marius@ubports.com>
 Standards-Version: 4.1.5
