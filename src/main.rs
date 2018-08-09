@@ -321,7 +321,7 @@ fn main() {
         let url = get_device_url().unwrap();
         let partitions_array = get_device_paritions_obj(url.clone()).unwrap();
         let c = json!(check_paritions_checksums_quiet(partitions_array));
-        println!("{:?}", c.to_string());
+        println!("{:}", c.to_string());
         return;
     }
     if args.len() > 1 && &args[1] == "-jd" {
@@ -338,7 +338,7 @@ fn main() {
         let upd = check_paritions_checksums_quiet(partitions_array);
         let c = json!(download_and_flash_paritions_quiet(upd, url));
 
-        println!("{:?}", c.to_string());
+        println!("{:}", c.to_string());
         return;
     }
     /*
