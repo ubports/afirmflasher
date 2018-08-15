@@ -138,18 +138,24 @@ fn extract_tarball(tarball: &Path, dest: &Path) -> Result<PathBuf, Box<std::erro
 }
 */
 
-fn checksum(file: &str) -> String {
+fn checksum(file: &str, n_bytes: u64) -> String {
     use sha2::Digest;
     let mut hasher = sha2::Sha256::default();
 
     let mut bytes = Vec::new();
-    File::open(get_cache_path().join(file)).unwrap().read_to_end(&mut bytes).unwrap();
+    let mut f = File::open(get_cache_path().join(file)).unwrap();
+    if n_bytes != 0 {
+        let mut chunk = f.take(n_bytes);
+        chunk.read_to_end(&mut bytes).unwrap();
+    } else {
+        f.read_to_end(&mut bytes).unwrap();
+    }
     hasher.input(bytes.as_ref());
 
     format!("{:x}", hasher.result())
 }
 
-fn for_each_partition<F>(par: Vec<Value>, func: F) -> Vec<Value>  where F: Fn(&str, &str, &str, Value, &mut Vec<Value>){
+fn for_each_partition<F>(par: Vec<Value>, func: F) -> Vec<Value>  where F: Fn(&str, &str, &str, u64, Value, &mut Vec<Value>){
     let mut vec: Vec<Value> = Vec::new();
     for val in par.iter() {
         if val.is_object() {
@@ -160,7 +166,11 @@ fn for_each_partition<F>(par: Vec<Value>, func: F) -> Vec<Value>  where F: Fn(&s
                 let partition = valobj["partition"].as_str().unwrap();
                 let file = valobj["file"].as_str().unwrap();
                 let checksum_str = valobj["checksum"].as_str().unwrap();
-                func(partition, file, checksum_str, val.to_owned(), &mut vec);
+                let mut n_bytes = 0;
+                if valobj.contains_key("n_bytes") {
+                    n_bytes = valobj["n_bytes"].as_u64().unwrap();
+                }
+                func(partition, file, checksum_str, n_bytes, val.to_owned(), &mut vec);
             }
         }
     }
@@ -169,39 +179,39 @@ fn for_each_partition<F>(par: Vec<Value>, func: F) -> Vec<Value>  where F: Fn(&s
 }
 
 fn print_paritions(par: Vec<Value>) {
-    for_each_partition(par, |partition, _file, _checksum_str, _value, _vec| {
+    for_each_partition(par, |partition, _file, _checksum_str, _n_bytes, _value, _vec| {
         println!("Partition {:?} is not up to date!", partition);
     });
 }
 
 
 fn download_and_flash_paritions(par: Vec<Value>, url: String) {
-    for_each_partition(par, |partition, file, checksum_str, _value, _vec| {
+    for_each_partition(par, |partition, file, checksum_str, n_bytes, _value, _vec| {
         println!("Downloading partition {:?}", partition);
         download_file(&format!("{}/{}", url, file), file).unwrap();
         println!("Flashing partition {:?}", partition);
         write_to_partition(file, partition).unwrap();
 
-        if checksum(partition) != checksum_str {
+        if checksum(partition, n_bytes) != checksum_str {
             println!("ERROR FILE DOES NOT MACH PARITION AFTER FLASH");
         }
     });
 }
 
 fn download_and_flash_paritions_quiet(par: Vec<Value>, url: String) -> Vec<Value> {
-    for_each_partition(par, |partition, file, checksum_str, value, vec| {
+    for_each_partition(par, |partition, file, checksum_str, n_bytes, value, vec| {
         download_file_quiet(&format!("{}/{}", url, file), file).unwrap();
         write_to_partition_quiet(file, partition).unwrap();
 
-        if checksum(partition) != checksum_str {
+        if checksum(partition, n_bytes) != checksum_str {
             vec.push(value);
         }
     })
 }
 
 fn check_paritions_checksums(par: Vec<Value>) -> Vec<Value> {
-    let rvec = for_each_partition(par, |partition, _file, checksum_str, value, vec| {
-        if checksum(partition) == checksum_str {
+    let rvec = for_each_partition(par, |partition, _file, checksum_str, n_bytes, value, vec| {
+        if checksum(partition, n_bytes) == checksum_str {
             println!("partition {:?} is up to date", partition);
             return;
         }
@@ -213,8 +223,8 @@ fn check_paritions_checksums(par: Vec<Value>) -> Vec<Value> {
 }
 
 fn check_paritions_checksums_quiet(par: Vec<Value>) -> Vec<Value> {
-    let rvec = for_each_partition(par, |partition, _file, checksum_str, value, vec| {
-        if checksum(partition) == checksum_str {
+    let rvec = for_each_partition(par, |partition, _file, checksum_str, n_bytes, value, vec| {
+        if checksum(partition, n_bytes) == checksum_str {
             return;
         }
 
