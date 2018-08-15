@@ -333,28 +333,29 @@ fn main() {
         flash_partition_if_newer(true);
         return;
     }
-    if args.len() > 1 && &args[1] == "-jc" {
+    else if args.len() > 1 && &args[1] == "-jc" {
         let url = get_device_url().unwrap();
         let partitions_array = get_device_paritions_obj(url.clone()).unwrap();
         let c = json!(check_paritions_checksums_quiet(partitions_array));
         println!("{:}", c.to_string());
         return;
     }
-    if args.len() > 1 && &args[1] == "-jd" {
+    else if args.len() > 1 && &args[1] == "-jd" {
         if !is_supported() {
             println!("ERR");
-            return
+            return;
         }
 
         println!("OK");
+        return;
     }
-    if args.len() > 1 && &args[1] == "-jf" {
-        let mut url;
+    else if args.len() > 1 && &args[1] == "-jf" {
+        let url;
         match get_device_url() {
             Ok(u) => url = u,
             Err(_) => {
                 println!("ERR");
-                return
+                return;
             },
         }
         let partitions_array = get_device_paritions_obj(url.clone()).unwrap();
@@ -362,6 +363,10 @@ fn main() {
         let c = json!(download_and_flash_paritions_quiet(upd, url));
 
         println!("{:}", c.to_string());
+        return;
+    } else {
+        println!("Device is: {:?}", get_device());
+        flash_partition_if_newer(false);
         return;
     }
     /*
@@ -371,6 +376,4 @@ fn main() {
         return;
     }
     */
-    println!("Device is: {:?}", get_device());
-    flash_partition_if_newer(false);
 }
