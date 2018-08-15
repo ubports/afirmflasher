@@ -147,12 +147,16 @@ fn checksum(file: &str, n_bytes: u64) -> String {
     if n_bytes != 0 {
         let mut chunk = f.take(n_bytes);
         chunk.read_to_end(&mut bytes).unwrap();
+        println!("n_bytes {:?}", n_bytes);
     } else {
         f.read_to_end(&mut bytes).unwrap();
+        println!("no n_bytes");
     }
     hasher.input(bytes.as_ref());
 
-    format!("{:x}", hasher.result())
+    let ret = format!("{:x}", hasher.result());
+    println!("{:?}", ret);
+    ret
 }
 
 fn for_each_partition<F>(par: Vec<Value>, func: F) -> Vec<Value>  where F: Fn(&str, &str, &str, u64, Value, &mut Vec<Value>){
