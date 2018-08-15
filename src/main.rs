@@ -309,6 +309,12 @@ fn daemon() {
 }
 */
 
+// Hardcode this for now
+fn is_supported() -> bool {
+    let dev = vec!["FP2"];
+    dev.contains(&get_device().as_str())
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     if args.len() > 1 && &args[1] == "-n" {
@@ -325,15 +331,22 @@ fn main() {
         return;
     }
     if args.len() > 1 && &args[1] == "-jd" {
-        let url = get_device_url();
-        match url {
-            Ok(_) => println!("OK"),
-            Err(_) => println!("ERR"),
+        if !is_supported() {
+            println!("ERR");
+            return
         }
-        return
+
+        println!("OK");
     }
     if args.len() > 1 && &args[1] == "-jf" {
-        let url = get_device_url().unwrap();
+        let mut url;
+        match get_device_url() {
+            Ok(u) => url = u,
+            Err(_) => {
+                println!("ERR");
+                return
+            },
+        }
         let partitions_array = get_device_paritions_obj(url.clone()).unwrap();
         let upd = check_paritions_checksums_quiet(partitions_array);
         let c = json!(download_and_flash_paritions_quiet(upd, url));
